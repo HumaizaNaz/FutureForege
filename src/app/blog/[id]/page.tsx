@@ -1,47 +1,82 @@
+import { Metadata } from "next";
+import posts from '@/app/post-details/data.json';
+import Image from "next/image";
+import { Clock4, User, CalendarDays } from "lucide-react";
+import { Skeleton } from "@/app/component/ui/skeleton";
+import Comments from "@/app/component/Comments";
+import BlogAnimation from "@/app/component/animations/BlogAnimation";
 
-import Link from "next/link"
-import { MoveRight } from "lucide-react"
-import { Metadata } from "next"
-import posts from "@/app/post-details/data.json"
-import Image from "next/image"
-import { Card } from "@/app/component/ui/Cards"
-import BlogAnimation from "@/app/component/animations/BlogAnimation"
-export const metadata:Metadata ={
-    title:"FutureForge | Blog"
-}
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
-export default function Blog() {
-    return (
-      <>
-        <div className="pt-20 w-full bg-slate-100">
-            <div className="max-w-screen-xl mx-auto py-10 md:px-2 px-6"> 
-                <h1 className="text-center text-5xl font-semibold">Our Latest Blog</h1>
-                <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8 cursor-pointer pt-10">
-                   {posts.map((post , index)=>(
-                    <BlogAnimation key={index}> 
-                    <Card className="hover:scale-105 duration-200 pb-3 rounded-2xl shadow-lg" >
-                    <Image
-                      src={post.src}
-                      alt={post.tittle}
-                      height={400}
-                      loading="lazy"
-                      width={400}
-                      className="w-full h-[65%] mb-4 rounded-t-2xl"
-                    />
-                    <p className="m-4 text-slate-500">
-                      <span>October</span> <span>23, 2024</span>
-                    </p>
-                    <h1 className="m-4 text-2xl font-semibold">{post.tittle}</h1>
-                    <Link href={`/blog/${post.id}`} className="flex items-center gap-1">
-                    <p className="ml-4 text-blue-500 hover:text-blue-700 text-xl">Read More</p>
-                    <MoveRight className="text-blue-500"/>
-                    </Link>
-                  </Card>
-                  </BlogAnimation>
-                   ))}
-                </div>
+export const generateMetadata = async ({
+  params,
+}: Props): Promise<Metadata> => {
+  await new Promise((ressolve) => {
+    setTimeout(() => {
+      ressolve(`${params.id}`);
+    }, 100);
+  });
+  return {
+    title: {
+      absolute: `Agriswara | Blog ${params.id}`,
+    },
+  };
+};
+
+export default function AllBlog({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
+  const post = posts.find((p) => p.id === id);
+
+  if (!post) return <Skeleton />;
+  return (
+    <div className="pt-20 w-full">
+      <div className="max-w-screen-md mx-auto py-20 px-10">
+        <BlogAnimation>
+          <h1 className="md:text-5xl sm:text-4xl text-2xl font-bold">{post.tittle}</h1>
+          <div className="my-6 text-slate-600 flex flex-col sm:flex-row gap-6">
+            <div className="flex gap-2">
+              <User />
+              <span>{post.author}</span>
             </div>
-        </div>
-        </>
-    )
+            <div className="flex gap-2">
+              <CalendarDays />
+              <span>11/3/24</span>
+            </div>
+            <div className="flex gap-2">
+              <Clock4 />
+              <span>2 min read</span>
+            </div>
+          </div>
+        </BlogAnimation>
+        <BlogAnimation>
+          <Image
+            src={post.src}
+            alt={post.tittle}
+            height={2000}
+            loading="lazy"
+            width={2000}
+            objectFit="cover"
+            objectPosition="center"
+            className="w-full  rounded-lg object-cover my-4"
+          />
+
+          <BlogAnimation>
+            <p className="text-2xl leading-relaxed py-10">{post.content}</p>
+          </BlogAnimation>
+        </BlogAnimation>
+        <BlogAnimation>
+          <div className="mt-20">
+          <Comments blogId={post.id} />
+          </div>
+        </BlogAnimation>
+      </div>
+    </div>
+  );
 }
