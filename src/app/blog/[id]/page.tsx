@@ -22,7 +22,7 @@ export const generateMetadata = async ({
   });
   return {
     title: {
-      absolute: `Agriswara | Blog ${params.id}`,
+      absolute: `FutureForge | Blog ${params.id}`,
     },
   };
 };
